@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: db
+    ports:
+      - '5432:5432'
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=postgres
+    networks:
+      - strazh
+    volumes:
+      - ./database/pgdb_data:/var/lib/postgresql/data
+      
+
+  vue-app:
+    image: vue-app
+    stdin_open: true
+    ports:
+      - '8080:8080'
+    networks:
+      - strazh
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules
+
+  api-server:
+    image: api-server
+    ports:
+      - '5000:5000'
+    networks:
+      - strazh
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
+
+volumes:
+  pgdb_data: null
+
+networks:
+  strazh:
+    driver: bridge
